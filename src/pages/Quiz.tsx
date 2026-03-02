@@ -1,21 +1,22 @@
 import { useState } from 'react';
 import type { Word, QuizQuestion } from '../types';
 import { PronunciationButton } from '../components/PronunciationButton';
+import { AnimationFeedback } from '../components/AnimationFeedback';
 import { shuffleArray } from '../utils/spacedRepetition';
 import { categoryLabels } from '../data/words';
 
 interface QuizProps {
   words: Word[];
   onUpdateWords: (words: Word[]) => void;
-  onBack: () => void;
 }
 
-export function Quiz({ words, onUpdateWords, onBack }: QuizProps) {
+export function Quiz({ words, onUpdateWords }: QuizProps) {
   const [questions, setQuestions] = useState<QuizQuestion[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [showResult, setShowResult] = useState(false);
   const [score, setScore] = useState({ correct: 0, wrong: 0 });
+  const [animationType, setAnimationType] = useState<'correct' | 'wrong' | null>(null);
 
   const generateQuestions = (): QuizQuestion[] => {
     const shuffled = shuffleArray(words).slice(0, 10);
@@ -41,17 +42,30 @@ export function Quiz({ words, onUpdateWords, onBack }: QuizProps) {
     setScore({ correct: 0, wrong: 0 });
   };
 
+  const handleExitQuizSession = () => {
+    setQuestions([]);
+    setCurrentIndex(0);
+    setSelectedAnswer(null);
+    setShowResult(false);
+  };
+
   const handleAnswer = (answer: string) => {
     if (showResult) return;
     setSelectedAnswer(answer);
     setShowResult(true);
     
     const isCorrect = answer === questions[currentIndex].word.chinese;
+    setAnimationType(isCorrect ? 'correct' : 'wrong');
+    
     if (isCorrect) {
       setScore(s => ({ ...s, correct: s.correct + 1 }));
     } else {
       setScore(s => ({ ...s, wrong: s.wrong + 1 }));
     }
+    
+    setTimeout(() => {
+      setAnimationType(null);
+    }, 400);
   };
 
   const handleNext = () => {
@@ -84,22 +98,12 @@ export function Quiz({ words, onUpdateWords, onBack }: QuizProps) {
   if (questions.length === 0 && score.correct === 0 && score.wrong === 0) {
     return (
       <div className="max-w-2xl mx-auto p-6">
-        <button
-          onClick={onBack}
-          className="flex items-center gap-2 text-slate-600 hover:text-slate-800 mb-6"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
-            <path fillRule="evenodd" d="M11.78 5.22a.75.75 0 0 1 0 1.06L8.06 10l3.72 3.72a.75.75 0 1 1-1.06 1.06l-4.25-4.25a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0Z" clipRule="evenodd" />
-          </svg>
-          返回
-        </button>
-
         <h1 className="text-3xl font-bold text-slate-800 mb-6">測驗模式</h1>
         <p className="text-slate-600 mb-6">選擇正確的中文翻譯</p>
 
         <button
           onClick={startQuiz}
-          className="w-full py-4 bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-bold text-lg transition-colors"
+          className="w-full min-h-[48px] py-4 bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-bold text-lg transition-colors shadow-lg"
         >
           開始測驗 (10題)
         </button>
@@ -119,7 +123,7 @@ export function Quiz({ words, onUpdateWords, onBack }: QuizProps) {
           </p>
           <button
             onClick={startQuiz}
-            className="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-medium transition-colors"
+            className="min-h-[48px] px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-medium transition-colors shadow-lg"
           >
             再測驗一次
           </button>
@@ -134,8 +138,8 @@ export function Quiz({ words, onUpdateWords, onBack }: QuizProps) {
     <div className="max-w-2xl mx-auto p-6">
       <div className="flex items-center justify-between mb-6">
         <button
-          onClick={onBack}
-          className="flex items-center gap-2 text-slate-600 hover:text-slate-800"
+          onClick={handleExitQuizSession}
+          className="flex items-center gap-2 min-h-[48px] px-3 text-slate-600 hover:text-slate-800"
         >
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
             <path fillRule="evenodd" d="M11.78 5.22a.75.75 0 0 1 0 1.06L8.06 10l3.72 3.72a.75.75 0 1 1-1.06 1.06l-4.25-4.25a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0Z" clipRule="evenodd" />
@@ -180,7 +184,7 @@ export function Quiz({ words, onUpdateWords, onBack }: QuizProps) {
                 key={idx}
                 onClick={() => handleAnswer(option)}
                 disabled={showResult}
-                className={`w-full p-4 rounded-xl border-2 text-left font-medium transition-all ${bgClass} ${
+                className={`w-full min-h-[48px] p-4 rounded-xl border-2 text-left font-medium transition-all ${bgClass} ${
                   !showResult ? 'border-slate-200' : 'border-transparent'
                 }`}
               >
@@ -193,12 +197,19 @@ export function Quiz({ words, onUpdateWords, onBack }: QuizProps) {
         {showResult && (
           <button
             onClick={handleNext}
-            className="w-full mt-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-medium transition-colors"
+            className="w-full mt-6 min-h-[48px] py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-medium transition-colors shadow-lg"
           >
             {currentIndex < questions.length - 1 ? '下一題' : '查看結果'}
           </button>
         )}
       </div>
+
+      {animationType && (
+        <AnimationFeedback 
+          type={animationType}
+          message={animationType === 'correct' ? '正確!' : '錯了!'}
+        />
+      )}
     </div>
   );
 }

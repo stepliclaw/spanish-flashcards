@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { Word } from '../types';
 import { PronunciationButton } from './PronunciationButton';
+import { categoryLabels, categoryColors } from '../data/words';
 
 interface FlashCardProps {
   word: Word;
@@ -17,12 +18,14 @@ export function FlashCard({ word, showAnswer = true, onFlip, onMarkKnown }: Flas
     onFlip?.();
   };
 
+  const categoryColor = categoryColors[word.category] || '#64748b';
+
   return (
     <div className="w-full max-w-md mx-auto">
       <div 
         onClick={handleFlip}
         className={`
-          relative min-h-[280px] cursor-pointer
+          relative min-h-[320px] cursor-pointer
           bg-white rounded-2xl shadow-lg
           transition-all duration-300 transform
           hover:shadow-xl
@@ -31,23 +34,26 @@ export function FlashCard({ word, showAnswer = true, onFlip, onMarkKnown }: Flas
         `}
       >
         <div className="absolute top-4 right-4">
-          <span className="px-3 py-1 text-xs font-medium bg-slate-100 text-slate-600 rounded-full">
-            {word.category}
+          <span 
+            className="px-3 py-1 text-xs font-medium rounded-full"
+            style={{ backgroundColor: `${categoryColor}20`, color: categoryColor }}
+          >
+            {categoryLabels[word.category] || word.category}
           </span>
         </div>
 
-        <div className="flex flex-col items-center justify-center min-h-[280px] p-8">
+        <div className="flex flex-col items-center justify-center min-h-[320px] p-8">
           {isFlipped ? (
             <div className="text-center">
-              <p className="text-4xl font-bold text-slate-800 mb-4">{word.spanish}</p>
-              <p className="text-xl text-emerald-600">{word.chinese}</p>
+              <p className="text-4xl font-bold text-slate-800 mb-6" style={{ fontSize: '28px' }}>{word.spanish}</p>
+              <p className="text-xl text-emerald-600" style={{ fontSize: '20px' }}>{word.chinese}</p>
               <div className="mt-6">
                 <PronunciationButton text={word.spanish} />
               </div>
             </div>
           ) : (
             <div className="text-center">
-              <p className="text-3xl font-semibold text-slate-400">點擊顯示答案</p>
+              <p className="text-2xl font-semibold text-slate-400">點擊顯示答案</p>
               <p className="text-sm text-slate-400 mt-2">Click to reveal</p>
             </div>
           )}
@@ -58,13 +64,13 @@ export function FlashCard({ word, showAnswer = true, onFlip, onMarkKnown }: Flas
         <div className="flex justify-center gap-4 mt-6">
           <button
             onClick={() => onMarkKnown(false)}
-            className="px-6 py-3 bg-red-100 hover:bg-red-200 text-red-700 rounded-xl font-medium transition-colors"
+            className="min-h-[56px] px-8 py-3 bg-red-100 hover:bg-red-200 text-red-700 rounded-xl font-bold transition-colors shadow-lg"
           >
             還沒記住
           </button>
           <button
             onClick={() => onMarkKnown(true)}
-            className="px-6 py-3 bg-emerald-100 hover:bg-emerald-200 text-emerald-700 rounded-xl font-medium transition-colors"
+            className="min-h-[56px] px-8 py-3 bg-emerald-100 hover:bg-emerald-200 text-emerald-700 rounded-xl font-bold transition-colors shadow-lg"
           >
             已經記住
           </button>

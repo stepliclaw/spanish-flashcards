@@ -20,3 +20,5 @@ export interface LearningProgress {
   reviewedToday: number;
   streak: number;
 }
+
+export type Page = 'dashboard' | 'learn' | 'quiz' | 'words';

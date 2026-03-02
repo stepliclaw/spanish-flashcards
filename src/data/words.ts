@@ -87,3 +87,13 @@ export const categoryLabels: Record<string, string> = {
   phrases: '常用句子',
   days: '星期',
 };
+
+export const categoryColors: Record<string, string> = {
+  greetings: '#FF6B6B',
+  numbers: '#FFD93D',
+  colors: '#A66CFF',
+  family: '#4DADEB',
+  food: '#FF9F43',
+  phrases: '#26DE81',
+  days: '#20BF6B',
+};

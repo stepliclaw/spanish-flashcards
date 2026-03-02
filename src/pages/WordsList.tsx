@@ -5,10 +5,9 @@ import { PronunciationButton } from '../components/PronunciationButton';
 
 interface WordsListProps {
   words: Word[];
-  onBack: () => void;
 }
 
-export function WordsList({ words, onBack }: WordsListProps) {
+export function WordsList({ words }: WordsListProps) {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -20,19 +19,8 @@ export function WordsList({ words, onBack }: WordsListProps) {
   });
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      <div className="flex items-center gap-4 mb-6">
-        <button
-          onClick={onBack}
-          className="flex items-center gap-2 text-slate-600 hover:text-slate-800"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
-            <path fillRule="evenodd" d="M11.78 5.22a.75.75 0 0 1 0 1.06L8.06 10l3.72 3.72a.75.75 0 1 1-1.06 1.06l-4.25-4.25a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0Z" clipRule="evenodd" />
-          </svg>
-          返回
-        </button>
-        <h1 className="text-2xl font-bold text-slate-800">全部單字</h1>
-      </div>
+    <div className="max-w-4xl mx-auto p-6 pb-24">
+      <h1 className="text-2xl font-bold text-slate-800 mb-6">全部單字</h1>
 
       <div className="flex flex-col sm:flex-row gap-4 mb-6">
         <input
@@ -40,12 +28,12 @@ export function WordsList({ words, onBack }: WordsListProps) {
           placeholder="搜尋單字..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="flex-1 px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          className="flex-1 min-h-[48px] px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"
         />
         <select
           value={selectedCategory}
           onChange={(e) => setSelectedCategory(e.target.value)}
-          className="px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          className="min-h-[48px] px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"
         >
           <option value="all">全部分類</option>
           {categories.map(cat => (
@@ -76,7 +64,7 @@ export function WordsList({ words, onBack }: WordsListProps) {
               </div>
               <span className="text-sm text-slate-400">{categoryLabels[word.category]}</span>
             </div>
-            <PronunciationButton text={word.spanish} className="px-3 py-1.5 text-sm" />
+            <PronunciationButton text={word.spanish} className="min-h-[48px] px-3 py-1.5 text-sm" />
           </div>
         ))}
       </div>

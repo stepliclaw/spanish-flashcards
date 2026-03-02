@@ -1,25 +1,40 @@
 import { useState, useEffect } from 'react';
-import type { Word } from './types';
+import type { Word, Page } from './types';
 import { defaultWords } from './data/words';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { Dashboard } from './pages/Dashboard';
 import { Learn } from './pages/Learn';
 import { Quiz } from './pages/Quiz';
 import { WordsList } from './pages/WordsList';
+import { BottomNav } from './components/BottomNav';
 import { loadVoices } from './utils/speech';
-
-type Page = 'dashboard' | 'learn' | 'quiz' | 'words';
 
 function App() {
   const [words, setWords] = useLocalStorage<Word[]>('spanish-words', defaultWords);
   const [currentPage, setCurrentPage] = useState<Page>('dashboard');
+  const [isLearning, setIsLearning] = useState(false);
+  const [isQuizzing, setIsQuizzing] = useState(false);
 
   useEffect(() => {
     loadVoices();
   }, []);
 
-  const handleNavigate = (page: 'learn' | 'quiz' | 'words') => {
-    setCurrentPage(page);
+  const handleNavigate = (page: Page) => {
+    if (page === 'dashboard') {
+      setIsLearning(false);
+      setIsQuizzing(false);
+      setCurrentPage('dashboard');
+    } else if (page === 'learn') {
+      setIsQuizzing(false);
+      setIsLearning(true);
+      setCurrentPage('learn');
+    } else if (page === 'quiz') {
+      setIsLearning(false);
+      setIsQuizzing(true);
+      setCurrentPage('quiz');
+    } else if (page === 'words') {
+      setCurrentPage('words');
+    }
   };
 
   const renderPage = () => {
@@ -29,7 +44,6 @@ function App() {
           <Learn
             words={words}
             onUpdateWords={setWords}
-            onBack={() => setCurrentPage('dashboard')}
           />
         );
       case 'quiz':
@@ -37,16 +51,10 @@ function App() {
           <Quiz
             words={words}
             onUpdateWords={setWords}
-            onBack={() => setCurrentPage('dashboard')}
           />
         );
       case 'words':
-        return (
-          <WordsList
-            words={words}
-            onBack={() => setCurrentPage('dashboard')}
-          />
-        );
+        return <WordsList words={words} />;
       default:
         return (
           <Dashboard
@@ -58,8 +66,14 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50 pb-20">
       {renderPage()}
+      <BottomNav
+        currentPage={currentPage}
+        isLearning={isLearning}
+        isQuizzing={isQuizzing}
+        onNavigate={handleNavigate}
+      />
     </div>
   );
 }
