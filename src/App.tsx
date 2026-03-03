@@ -66,7 +66,7 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-20">
+    <div className="min-h-screen bg-primary-50 pb-20">
       {renderPage()}
       <BottomNav
         currentPage={currentPage}
